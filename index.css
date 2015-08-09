@@ -1,0 +1,17 @@
+html, body {
+  height: 100%;
+  font-family: sans-serif;
+}
+
+@media only screen {
+  img {max-width: 90%; height: auto;}
+}
+
+#main {
+  position: relative;
+}
+
+#lgtm {
+  z-index: 100;
+  position: absolute;
+}
