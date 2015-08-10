@@ -15,3 +15,7 @@ html, body {
   z-index: 100;
   position: absolute;
 }
+
+#dropzone {
+  font-size: 3em;
+}

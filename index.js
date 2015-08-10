@@ -1,8 +1,11 @@
 'use strict';
 
-var LgtmImageBox = React.createClass({
+var LgtmComponent = React.createClass({
   getInitialState: function() {
-    return {imgPath: "Tether-00180.jpg", lgtm: {text: "LGTM!", fontSize: 5.0}};
+    return {imgPath: undefined, lgtm: {text: "LGTM!", fontSize: 5.0}};
+  },
+  handleChangeImagePath: function(path) {
+    this.setState(path);
   },
   handleChangeLGTM: function(lgtm) {
     this.setState({lgtm: lgtm});
@@ -10,9 +13,36 @@ var LgtmImageBox = React.createClass({
   render: function() {
     return (
       <div id="main">
-        <img src={this.state.imgPath} ref="image"/>
-        <LgtmText lgtm={this.state.lgtm} />
+        <LgtmImageBox imgPath={this.state.imgPath} onChangeImagePath={this.handleChangeImagePath} ref="image"/>
+        {this.state.imgPath ? <LgtmText lgtm={this.state.lgtm} /> : null}
         <LgtmConfigForm lgtm={this.state.lgtm} onChangeLGTM={this.handleChangeLGTM} />
+      </div>
+    );
+  }
+});
+
+var LgtmImageBox = React.createClass({
+  preventDefault: function(e) {
+    e.preventDefault();
+  },
+  handleDrop: function(e) {
+    e.preventDefault();
+
+    var file = e.dataTransfer.files[0];
+    var type = file.type;
+    if (type.startsWith("image/")) {
+      var filePath = file.path;
+      this.props.onChangeImagePath({imgPath: filePath});
+    }
+  },
+  render: function() {
+    return (
+      <div onDrop={this.handleDrop} onDragEnter={this.preventDefault} onDragOver={this.preventDefault}>
+        {( this.props.imgPath ? function() {
+          return <img src={this.props.imgPath}/>
+        } : function() {
+          return <p id="dropzone">Drop image here!</p>
+        }).call(this)}
       </div>
     );
   }
@@ -57,7 +87,7 @@ var LgtmText = React.createClass({
 });
 
 var component = React.render(
-  <LgtmImageBox />,
+  <LgtmComponent />,
   document.getElementById('content')
 );
 
@@ -67,13 +97,18 @@ var MenuItem = remote.require('menu-item');
 
 var menu = new Menu();
 menu.append(new MenuItem({label: "Copy Image to Clipboard", click: function() {
-  var imageDOM = React.findDOMNode(component.refs.image);
+  var imageDOM = React.findDOMNode(component.refs.image).getElementsByTagName("img")[0];
+  if (!imageDOM) {
+    console.error("image DOM not found.");
+    return;
+  }
   var rect = {
     x: imageDOM.x,
     y: imageDOM.y,
     width: imageDOM.width,
     height: imageDOM.height
   };
+
   remote.getCurrentWindow().capturePage(rect, function(img) {
     var clipboard = remote.require('clipboard');
     clipboard.writeImage(img);
