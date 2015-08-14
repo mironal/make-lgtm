@@ -13,9 +13,14 @@ var LgtmComponent = React.createClass({
   render: function() {
     return (
       <div id="main">
-        <LgtmImageBox imgPath={this.state.imgPath} onChangeImagePath={this.handleChangeImagePath} ref="image"/>
+        <LgtmImageBox
+          imgPath={this.state.imgPath}
+          onChangeImagePath={this.handleChangeImagePath}
+        />
         {this.state.imgPath ? <LgtmText lgtm={this.state.lgtm} /> : null}
-        <LgtmConfigForm lgtm={this.state.lgtm} onChangeLGTM={this.handleChangeLGTM} />
+        <LgtmConfigForm
+          lgtm={this.state.lgtm}
+          onChangeLGTM={this.handleChangeLGTM} />
       </div>
     );
   }
@@ -28,18 +33,59 @@ var LgtmImageBox = React.createClass({
   handleDrop: function(e) {
     e.preventDefault();
 
-    var file = e.dataTransfer.files[0];
-    var type = file.type;
-    if (type.startsWith("image/")) {
-      var filePath = file.path;
-      this.props.onChangeImagePath({imgPath: filePath});
+    if (e.dataTransfer.files.length > 0) {
+
+      var file = e.dataTransfer.files[0];
+      var type = file.type;
+      if (type.startsWith("image/")) {
+        var filePath = file.path;
+        this.props.onChangeImagePath({imgPath: filePath});
+      }
     }
+  },
+  handleContextMenu: function(e) {
+    e.preventDefault();
+
+    var remote = require('remote');
+    var Menu = remote.require('menu');
+    var MenuItem = remote.require('menu-item');
+
+    var menu = new Menu();
+    if (this.refs.image) {
+
+      var _this = this;
+      menu.append(new MenuItem({label: "Copy Image to Clipboard", click: function() {
+        var imageDOM = React.findDOMNode(_this.refs.image);
+        if (!imageDOM) {
+          console.error("image DOM not found.");
+          return;
+        }
+        var rect = {
+          x: imageDOM.x,
+          y: imageDOM.y,
+          width: imageDOM.width,
+          height: imageDOM.height
+        };
+
+        remote.getCurrentWindow().capturePage(rect, function(img) {
+          var clipboard = remote.require('clipboard');
+          clipboard.writeImage(img);
+        });
+      }}));
+    }
+
+    menu.popup(remote.getCurrentWindow());
   },
   render: function() {
     return (
-      <div onDrop={this.handleDrop} onDragEnter={this.preventDefault} onDragOver={this.preventDefault}>
+      <div
+        onDrop={this.handleDrop}
+        onDragEnter={this.preventDefault}
+        onDragOver={this.preventDefault}
+        onContextMenu={this.handleContextMenu}
+        >
         {( this.props.imgPath ? function() {
-          return <img src={this.props.imgPath}/>
+          return <img src={this.props.imgPath} ref="image" />
         } : function() {
           return <p id="dropzone">Drop image here!</p>
         }).call(this)}
@@ -90,33 +136,4 @@ var component = React.render(
   <LgtmComponent />,
   document.getElementById('content')
 );
-
-var remote = require('remote');
-var Menu = remote.require('menu');
-var MenuItem = remote.require('menu-item');
-
-var menu = new Menu();
-menu.append(new MenuItem({label: "Copy Image to Clipboard", click: function() {
-  var imageDOM = React.findDOMNode(component.refs.image).getElementsByTagName("img")[0];
-  if (!imageDOM) {
-    console.error("image DOM not found.");
-    return;
-  }
-  var rect = {
-    x: imageDOM.x,
-    y: imageDOM.y,
-    width: imageDOM.width,
-    height: imageDOM.height
-  };
-
-  remote.getCurrentWindow().capturePage(rect, function(img) {
-    var clipboard = remote.require('clipboard');
-    clipboard.writeImage(img);
-  });
-}}));
-
-window.addEventListener('contextmenu', function(e) {
-  e.preventDefault();
-  menu.popup(remote.getCurrentWindow());
-}, false);
 
