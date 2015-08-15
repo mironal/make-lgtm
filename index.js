@@ -49,6 +49,7 @@ var LgtmImageBox = React.createClass({
     var remote = require('remote');
     var Menu = remote.require('menu');
     var MenuItem = remote.require('menu-item');
+    var clipboard = remote.require('clipboard');
 
     var menu = new Menu();
     if (this.refs.image) {
@@ -68,9 +69,16 @@ var LgtmImageBox = React.createClass({
         };
 
         remote.getCurrentWindow().capturePage(rect, function(img) {
-          var clipboard = remote.require('clipboard');
           clipboard.writeImage(img);
         });
+      }}));
+    }
+
+    var image = clipboard.readImage();
+    if (image && image.isEmpty() === false) {
+      var _this = this;
+      menu.append(new MenuItem({label: "Paste Image from Clipboard", click: function() {
+        _this.props.onChangeImagePath({imgPath: image.toDataUrl()});
       }}));
     }
 
