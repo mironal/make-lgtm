@@ -22,3 +22,5 @@ electron .
 ### SS (´ . .̫ . `)
 
 ![ss](doc/ss.png)
+
+![flow](doc/flow.gif)
