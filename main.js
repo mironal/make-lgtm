@@ -1,9 +1,8 @@
 var app = require('app');
+var menubar = require('menubar');
 var BrowserWindow = require('browser-window');
 
 require('crash-reporter').start();
-
-var mainWindow = null;
 
 app.on('window-all-closed', function() {
   if(process.platform != 'darwin') {
@@ -11,15 +10,12 @@ app.on('window-all-closed', function() {
   }
 });
 
-app.on('ready', function() {
-  mainWindow = new BrowserWindow({width: 800, height: 600});
-
-  mainWindow.loadUrl('file://' + __dirname + '/index.html');
-
-  mainWindow.openDevTools();
-
-  mainWindow.on('closed', function() {
-    mainWindow = null;
-  });
+var mb = menubar({
+  width: 800,
+  height: 600,
+  icon: __dirname + '/menubar-icon.png',
+  'always-on-top': true
 });
+
+app.dock.hide();
 
