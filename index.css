@@ -19,3 +19,7 @@ html, body {
 #dropzone {
   font-size: 3em;
 }
+
+#image-url {
+  width: 80%;
+}

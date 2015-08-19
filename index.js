@@ -21,6 +21,8 @@ var LgtmComponent = React.createClass({
         <LgtmConfigForm
           lgtm={this.state.lgtm}
           onChangeLGTM={this.handleChangeLGTM} />
+        <LgtmImageUrlForm
+          onChangeImagePath={this.handleChangeImagePath} />
       </div>
     );
   }
@@ -110,12 +112,32 @@ var LgtmConfigForm = React.createClass({
 
     this.props.onChangeLGTM({text: text, fontSize: fontSize});
   },
-  render: function(){
+  render: function() {
     var lgtm = this.props.lgtm;
     return (
       <form onChange={this.handleChange}>
         <input type="text" defaultValue={lgtm.text} placeholder="text" ref="text" />
         <input type="text" defaultValue={lgtm.fontSize} placeholder="font size [em]" ref="fontSize" />
+      </form>
+    );
+  }
+});
+
+var LgtmImageUrlForm = React.createClass({
+  handleSubmit: function(e) {
+    e.preventDefault();
+
+    var input = React.findDOMNode(this.refs.url);
+    var url = input.value.trim();
+    this.props.onChangeImagePath({imgPath: url});
+
+    input.value = "";
+  },
+  render: function() {
+    return (
+      <form onSubmit={this.handleSubmit}>
+        <input id="image-url" type="url" placeholder="http://your/image/url" ref="url"/>
+        <input type="submit" value="Load Image" />
       </form>
     );
   }
