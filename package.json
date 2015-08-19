@@ -4,7 +4,8 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "pack": "electron-packager . \"Make LGTM!\" --platform=darwin,win32 --arch=x64 --version=0.30.4 --out=builds --icon=img/menubar-icon@2x.png && cd builds && zip -r \"Make LGTM for mac.zip\" \"Make LGTM!-darwin-x64\" && zip -r \"Make LGTM for Windows\" \"Make LGTM!-win32-x64\" && cd .."
   },
   "author": "mironal",
   "license": "MIT",
