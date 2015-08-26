@@ -39,7 +39,7 @@ app.on('ready', function() {
     // 動的にメニューを書き換えたいけどタイミングが無い...
     {label: 'Make LGTM! or Hide', click: function(){
 
-      createWindowIfNeede();
+      createWindowIfNeeded();
 
       if (window && window.isVisible()) {
         window.hide();
