@@ -1,5 +1,8 @@
 'use strict';
 
+var React = require('react');
+var Draggable = require('react-draggable');
+
 var LgtmComponent = React.createClass({
   getInitialState: function() {
     return {imgPath: undefined, lgtm: {text: "LGTM!", fontSize: 5.0}};
@@ -13,11 +16,13 @@ var LgtmComponent = React.createClass({
   render: function() {
     return (
       <div id="main">
-        <LgtmImageBox
-          imgPath={this.state.imgPath}
-          onChangeImagePath={this.handleChangeImagePath}
-        />
-        {this.state.imgPath ? <LgtmText lgtm={this.state.lgtm} /> : null}
+        <div>
+          <LgtmImageBox
+            imgPath={this.state.imgPath}
+            onChangeImagePath={this.handleChangeImagePath}
+          />
+          {this.state.imgPath ? <LgtmText lgtm={this.state.lgtm} /> : null}
+        </div>
         <LgtmConfigForm
           lgtm={this.state.lgtm}
           onChangeLGTM={this.handleChangeLGTM} />
@@ -144,20 +149,20 @@ var LgtmImageUrlForm = React.createClass({
 });
 
 var LgtmText = React.createClass({
-  getInitialState: function() {
-    return {top: 0, left: 0};
-  },
-  handleDragEnd: function(e) {
-    this.setState({top: e.clientY, left: e.clientX});
-  },
   render: function() {
     var spanStyle = {
-      top: this.state.top,
-      left: this.state.left,
       fontSize: this.props.lgtm.fontSize + "em"
     };
     return (
-      <span id="lgtm" style={spanStyle} draggable="true" onDrag={this.handleDrag} onDragEnd={this.handleDragEnd} onDragStart={this.handleDragStart}>{this.props.lgtm.text}</span>
+      <Draggable
+        bounds="parent"
+        start={{x: 0,  y: 0}}
+        >
+        <span
+          id="lgtm"
+          style={spanStyle}
+          > {this.props.lgtm.text}</span>
+      </Draggable>
     );
   }
 });
