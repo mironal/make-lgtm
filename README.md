@@ -24,6 +24,18 @@ cd <this repo>
 electron .
 ```
 
+### 実行ファイルの作り方
+
+```sh
+npm install electron-prebuilt -g
+git clone <this repo>
+cd <this repo>
+npm run-script pack
+
+# mac -> Make LGTM!-darwin-x64/Make LGTM!.app
+# win -> Make LGTM!-win32-x64/Make LGTM!.exe
+```
+
 ### SS (´ . .̫ . `)
 
 ![ss](doc/ss.png)
